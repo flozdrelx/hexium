@@ -70,4 +70,4 @@ class GetWebsite:
         saved_files = self.save_files(title, html, markdown)
         saved_names = ', '.join(path.name for path in saved_files)
 
-        return f'Website has been saved in the websites folder: {saved_names}'
+        return f'Website has been saved in Scripts/websites: {saved_names}'
