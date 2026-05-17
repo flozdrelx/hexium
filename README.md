@@ -1,4 +1,4 @@
-# Hexium Browser Prototype V0.02
+# Hexium Browser Prototype V0.03
 
 #### Experimental mini browser project
 
@@ -14,12 +14,18 @@ A CLI-based browser prototype currently in active development.
   * Markdown (`.md`)
   * HTML (`.html`)
   * Both formats simultaneously
+* Optional asset downloading when saving HTML:
+  * CSS files
+  * Images
+  * Scripts and common media references
+* Socket support
+* Additional networking commands
+* Individual folders for downloaded websites to avoid asset conflicts
 
 ---
 
 # Planned Features
 
-* Additional commands and socket support (V0.03)
 * SSL, HTTPS support, and redirect handling (V0.04)
 * Basic DOM support and browsing history (V0.05)
 * Improved commands and download manager (V0.06)
@@ -35,6 +41,23 @@ Downloaded websites are stored in:
 
 ```text
 Scripts/websites
+```
+
+Each downloaded site is saved in its own folder:
+
+```text
+Scripts/websites/Example_Domain/index.html
+Scripts/websites/Example_Domain/index.md
+Scripts/websites/Example_Domain/assets/
+```
+
+Example commands:
+
+```text
+get example.com
+get example.com html --assets
+get example.com both -a
+get example.com --save html --assets
 ```
 
 ---

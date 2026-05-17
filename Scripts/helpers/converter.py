@@ -1,10 +1,13 @@
 import re
+from urllib.parse import urlparse
 
 class Validate:
     def __init__(self, string):
         self.string = string
 
     def reform(self):
+        self.string = self.string.strip()
+
         if not self.string.startswith('http://') and not self.string.startswith('https://'):
             self.string = 'http://' + self.string
 
@@ -17,9 +20,15 @@ class Validate:
         url = self.string[4:].strip()
 
         return url if url else None
+
+    def hostname(self):
+        url = self.reform()
+        parsed = urlparse(url)
+
+        return parsed.hostname
     
     def sanitize_url(self):
-        self.string = re.sub(r'[<>:"/\\|?*\s]+', '_', self.string.strip())
+        self.string = re.sub(r"[<>:'/\\|?*\s]+", '_', self.string.strip())
         self.string = re.sub(r'[^\w.\-=]+', '_', self.string)
         self.string = re.sub(r'\s+', '_', self.string)
         self.string = re.sub(r'_+', '_', self.string)
