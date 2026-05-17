@@ -56,8 +56,7 @@ Example commands:
 ```text
 get example.com
 get example.com html --assets
-get example.com both -a
-get example.com --save html --assets
+get example.com both
 ```
 
 ---
