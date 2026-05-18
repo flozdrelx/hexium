@@ -14,11 +14,11 @@ A CLI-based browser prototype currently in active development.
   * Markdown (`.md`)
   * HTML (`.html`)
   * Both formats simultaneously
-* Optional asset downloading when saving HTML [BETA]:
+* Optional asset downloading when saving HTML [BETA-UNSTABLE]:
   * CSS files
   * Images
   * Scripts and common media references
-* Socket support
+* Socket support (only HTTP)
 * Additional networking commands
 * Individual folders for downloaded websites to avoid asset conflicts
 
@@ -51,7 +51,7 @@ Scripts/websites/Example_Domain/index.md
 Scripts/websites/Example_Domain/assets/
 ```
 
-Example commands:
+Example commands (for downloading):
 
 ```text
 get example.com
