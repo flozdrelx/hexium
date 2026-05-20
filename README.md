@@ -1,4 +1,4 @@
-# Hexium Browser Prototype V0.03
+# Hexium Browser Prototype V0.03-fixed
 
 #### Experimental mini browser project
 
@@ -14,7 +14,7 @@ A CLI-based browser prototype currently in active development.
   * Markdown (`.md`)
   * HTML (`.html`)
   * Both formats simultaneously
-* Optional asset downloading when saving HTML [BETA-UNSTABLE]:
+* Optional asset downloading when saving HTML [FIXED-WORKING]:
   * CSS files
   * Images
   * Scripts and common media references
