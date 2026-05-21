@@ -1,4 +1,5 @@
 import requests
+from urllib.parse import urlparse
 from helpers.converter import Validate
 from utils.http_formatter import format_requests_response
 
@@ -26,6 +27,10 @@ class PostRequest:
     def post_request(self):
         validation = Validate(self.url)
         self.url = validation.reform()
+        parsed = urlparse(self.url)
+
+        if parsed.scheme.lower() not in ('http', 'https') or not parsed.hostname:
+            return 'Networking post supports http:// and https:// URLs.'
 
         data, error = self.parse_data()
 
@@ -33,9 +38,12 @@ class PostRequest:
             return error
 
         try:
-            response = requests.post(self.url, data=data, timeout=15)
+            response = requests.post(self.url, data=data, timeout=15, allow_redirects=True)
 
             return format_requests_response(response)
+
+        except requests.exceptions.TooManyRedirects:
+            return 'Too many redirects while sending POST request.'
 
         except requests.exceptions.RequestException as e:
             return f'Error sending POST request: {e}'

@@ -1,4 +1,4 @@
-# Hexium Browser Prototype V0.03-fixed
+# Hexium Browser Prototype V0.04-unstable
 
 #### Experimental mini browser project
 
@@ -21,12 +21,14 @@ A CLI-based browser prototype currently in active development.
 * Socket support (only HTTP)
 * Additional networking commands
 * Individual folders for downloaded websites to avoid asset conflicts
+* HTTPS support
+* SSL, requests are safe
+* Redirect handling for HTTP requests and website downloads
 
 ---
 
 # Planned Features
 
-* SSL, HTTPS support, and redirect handling (V0.04)
 * Basic DOM support and browsing history (V0.05)
 * Improved commands and download manager (V0.06)
 * Better HTML parser (V0.07)
@@ -63,4 +65,4 @@ get example.com both
 
 # Current Status
 
-The prototype is currently stable and functioning properly.
+The prototype is currently being tested for the next version.

@@ -3,7 +3,7 @@ class Parser:
         self.response = response
 
     def decode_chunked_body(self, body: bytes) -> bytes:
-        decoded = b''
+        decoded = []
         remaining = body
 
         while remaining:
@@ -20,10 +20,13 @@ class Parser:
             if size == 0:
                 break
 
-            decoded += remaining[:size]
-            remaining = remaining[size + 2:]
+            decoded.append(remaining[:size])
+            remaining = remaining[size:]
 
-        return decoded
+            if remaining.startswith(b'\r\n'):
+                remaining = remaining[2:]
+
+        return b''.join(decoded)
 
     def response_parse(self):
         headers, separator, body = self.response.partition(b'\r\n\r\n')

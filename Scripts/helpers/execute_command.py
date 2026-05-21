@@ -9,6 +9,7 @@ from commands.networking.ping import CheckPing
 from utils.parser import CommandParser
 from utils.http_formatter import format_parsed_response
 from utils.request_builder import RequestBuilder
+from urllib.parse import urljoin
 
 class ExecuteMainCommands:
     def __init__(self, command, help_msg):
@@ -82,6 +83,9 @@ class ExecuteMainCommands:
             return 'Unknown command. Use get <URL> [md|html|both] [--assets], clear, return, or exit.'
         
 class ExecuteHTTPCommands:
+    REDIRECT_STATUSES = {301, 302, 303, 307, 308}
+    MAX_REDIRECTS = 5
+
     def __init__(self, command, help_msg):
         self.command = command
         self.help_msg = help_msg
@@ -96,6 +100,87 @@ class ExecuteHTTPCommands:
         command_name, args = parsed
         return command_name, args, None
 
+    def get_status_code(self, response):
+        status_line = response.get('headers', '').splitlines()[0:1]
+
+        if not status_line:
+            return None
+
+        parts = status_line[0].split()
+
+        if len(parts) < 2:
+            return None
+
+        try:
+            return int(parts[1])
+        except ValueError:
+            return None
+
+    def get_header(self, response, header_name):
+        target = header_name.lower()
+
+        for header in response.get('headers', '').splitlines()[1:]:
+            name, separator, value = header.partition(':')
+
+            if separator and name.strip().lower() == target:
+                return value.strip()
+
+        return None
+
+    def get_response(self, url):
+        current_url = url
+        visited_urls = set()
+        redirects = []
+
+        while True:
+            try:
+                builder = RequestBuilder(current_url)
+            except ValueError as e:
+                return None, str(e)
+
+            base_url = builder.url.geturl()
+
+            if base_url in visited_urls:
+                return None, f'Redirect loop detected at {base_url}.'
+
+            visited_urls.add(base_url)
+            request = builder.build_get_request()
+            client = GetRequest(builder.host, builder.port, builder.secure)
+            response = client.send_and_receive(request)
+
+            status_code = self.get_status_code(response)
+
+            if status_code not in self.REDIRECT_STATUSES:
+                response['redirects'] = redirects
+                response['final_url'] = base_url
+                return response, None
+
+            location = self.get_header(response, 'Location')
+
+            if not location:
+                response['redirects'] = redirects
+                response['final_url'] = base_url
+                return response, None
+
+            current_url = urljoin(base_url, location)
+
+            if len(redirects) >= self.MAX_REDIRECTS:
+                blocked_redirect = (status_code, base_url, current_url)
+                return None, self.format_redirect_limit_error(redirects, blocked_redirect)
+
+            redirects.append((status_code, base_url, current_url))
+
+    def format_redirect_limit_error(self, redirects, blocked_redirect):
+        lines = [f'Too many redirects. Stopped after {self.MAX_REDIRECTS} redirects.']
+
+        for status_code, source_url, target_url in redirects:
+            lines.append(f'  HTTP {status_code}: {source_url} -> {target_url}')
+
+        status_code, source_url, target_url = blocked_redirect
+        lines.append(f'  Blocked HTTP {status_code}: {source_url} -> {target_url}')
+
+        return '\n'.join(lines)
+
     def execute(self):
         command_name, args, error = self.parse_command()
 
@@ -107,15 +192,10 @@ class ExecuteHTTPCommands:
                 return 'Please provide exactly one url for get.'
             
             url = args[0]
+            response, error = self.get_response(url)
 
-            try:
-                builder = RequestBuilder(url)
-            except ValueError as e:
-                return str(e)
-
-            request = builder.build_get_request()
-            client = GetRequest(builder.host, builder.port, builder.secure)
-            response = client.send_and_receive(request)
+            if error:
+                return error
 
             return f'\n{format_parsed_response(response)}\n'
         

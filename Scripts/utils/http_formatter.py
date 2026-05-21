@@ -30,12 +30,44 @@ def format_parsed_response(response):
     if not headers:
         return body
 
-    return format_http_response(headers[0], headers[1:], body)
+    formatted = format_http_response(headers[0], headers[1:], body)
+    redirects = response.get('redirects') or []
+
+    if not redirects:
+        return formatted
+
+    redirect_lines = [
+        '',
+        'Redirects'
+    ]
+
+    for status_code, source_url, target_url in redirects:
+        redirect_lines.append(f'  HTTP {status_code}: {source_url} -> {target_url}')
+
+    if response.get('final_url'):
+        redirect_lines.append(f'  Final URL: {response["final_url"]}')
+
+    return formatted + '\n' + '\n'.join(redirect_lines)
 
 
 def format_requests_response(response):
-    return format_http_response(
+    formatted = format_http_response(
         f'HTTP {response.status_code}',
         response.headers,
         response.text
     )
+
+    if not response.history:
+        return formatted
+
+    redirect_lines = [
+        '',
+        'Redirects'
+    ]
+
+    for item in response.history:
+        redirect_lines.append(f'  HTTP {item.status_code} -> {item.headers.get("Location", item.url)}')
+
+    redirect_lines.append(f'  Final URL: {response.url}')
+
+    return formatted + '\n' + '\n'.join(redirect_lines)

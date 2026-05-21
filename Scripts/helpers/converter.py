@@ -8,7 +8,9 @@ class Validate:
     def reform(self):
         self.string = self.string.strip()
 
-        if not self.string.startswith('http://') and not self.string.startswith('https://'):
+        lower_string = self.string.lower()
+
+        if not lower_string.startswith('http://') and not lower_string.startswith('https://'):
             self.string = 'http://' + self.string
 
         return self.string

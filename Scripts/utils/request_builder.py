@@ -12,6 +12,9 @@ class RequestBuilder:
         self.port = self.url.port or (443 if self.secure else 80)
         self.path = self.url.path or '/'
 
+        if self.url.params:
+            self.path = f'{self.path};{self.url.params}'
+
         if self.url.query:
             self.path = f'{self.path}?{self.url.query}'
 
@@ -30,7 +33,9 @@ class RequestBuilder:
         request = (
             f'GET {self.path} HTTP/1.1\r\n'
             f'Host: {host_header}\r\n'
-            'User-Agent: Hexium/0.03\r\n'
+            'User-Agent: Hexium/0.04\r\n'
+            'Accept: */*\r\n'
+            'Accept-Encoding: identity\r\n'
             'Connection: close\r\n\r\n'
         )
 

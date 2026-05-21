@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+Scripts/venv/
+Scripts/websites/*/
