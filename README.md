@@ -14,7 +14,7 @@ A CLI-based browser prototype currently in active development.
   * Markdown (`.md`)
   * HTML (`.html`)
   * Both formats simultaneously
-* Optional asset downloading when saving HTML [FIXED-WORKING]:
+* Optional asset downloading when saving HTML:
   * CSS files
   * Images
   * Scripts and common media references
